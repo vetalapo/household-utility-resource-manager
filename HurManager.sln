@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HurManager.App", "HurManager\HurManager.App.csproj", "{7566D358-B435-4023-AD15-39F3DBB3D746}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HurManager.App", "HurManager.App\HurManager.App.csproj", "{7566D358-B435-4023-AD15-39F3DBB3D746}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HurManager.Domain", "Domain\HurManager.Domain.csproj", "{4D1F2919-E332-4577-A166-03AEF382ACE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HurManager.Domain", "HurManager.Domain\HurManager.Domain.csproj", "{4D1F2919-E332-4577-A166-03AEF382ACE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HurManager.Dto", "Dto\HurManager.Dto.csproj", "{FF302BF5-3539-4C38-B126-3B7693169817}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HurManager.Dto", "HurManager.Dto\HurManager.Dto.csproj", "{FF302BF5-3539-4C38-B126-3B7693169817}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HurManager.Bll", "HurManager.Bll\HurManager.Bll.csproj", "{54A8E69C-7B33-4537-829B-59E15E5CDB46}"
 EndProject

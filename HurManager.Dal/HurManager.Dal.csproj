@@ -5,8 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Context\Modeling\" />
-    <Folder Include="Context\Seeders\" />
     <Folder Include="DI\" />
     <Folder Include="Mapping\" />
     <Folder Include="Migrations\" />
@@ -22,6 +20,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HurManager.Core\HurManager.Core.csproj" />
+    <ProjectReference Include="..\HurManager.Domain\HurManager.Domain.csproj" />
   </ItemGroup>
 
 </Project>

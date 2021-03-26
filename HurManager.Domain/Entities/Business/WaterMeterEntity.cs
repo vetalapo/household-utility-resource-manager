@@ -10,6 +10,8 @@ namespace HurManager.Domain.Entities.Business
 
         public int Reading { get; set; }
 
+        public int HouseId { get; set; }
+
         public HouseEntity House { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using HurManager.Dal.Context.Seeders;
 using HurManager.Domain.Entities.Business;
-using HurManager.Dal.Context.Seeders;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HurManager.Dal.Context.Modeling
 {

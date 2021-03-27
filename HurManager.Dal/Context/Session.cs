@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+
 using HurManager.Core.Services.Session;
 using HurManager.Domain.Entities.Interfaces;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace HurManager.Dal.Context
 {
@@ -23,8 +24,6 @@ namespace HurManager.Dal.Context
         }
 
         public IDbConnection DbConnection => this._context.Database.GetDbConnection();
-
-        public Guid Id { get; } = Guid.NewGuid();
 
         public IEnumerable<object> AddedEntities()
         {

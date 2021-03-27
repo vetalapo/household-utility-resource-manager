@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using HurManager.Core.Services.Session;
 
 namespace HurManager.Dal.Context

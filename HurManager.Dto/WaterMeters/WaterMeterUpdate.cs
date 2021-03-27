@@ -2,7 +2,7 @@
 {
     public class WaterMeterUpdate
     {
-        public int WaterMeterId { get; set; }
+        public int Id { get; set; }
 
         public string FactoryNumber { get; set; }
 

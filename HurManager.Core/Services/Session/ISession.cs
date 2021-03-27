@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using HurManager.Domain.Entities.Interfaces;
 
 namespace HurManager.Core.Services.Session
 {
     public interface ISession : IDisposable
     {
-        Guid Id { get; }
-
         IEnumerable<object> AddedEntities();
 
         IEnumerable<TEntity> AddedEntities<TEntity>()
@@ -67,5 +67,8 @@ namespace HurManager.Core.Services.Session
 
         Task UpdateEntityAsync<TEntity>(TEntity entity)
             where TEntity : class;
+
+        IQueryable<T> Query<T>(bool ignoreGlobalFilters = false)
+            where T : class;
     }
 }

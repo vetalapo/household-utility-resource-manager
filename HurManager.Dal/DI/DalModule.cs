@@ -1,5 +1,7 @@
 ﻿using Autofac;
+
 using AutoMapper;
+
 using HurManager.Core.Services.Session;
 using HurManager.Dal.Context;
 using HurManager.Dal.Mapping;

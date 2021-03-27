@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using HurManager.Domain.Entities.Business;
-using HurManager.Core.Services.Session;
+﻿using HurManager.Core.Services.Session;
 using HurManager.Dal.Context.Modeling;
+using HurManager.Domain.Entities.Business;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace HurManager.Dal.Context
 {

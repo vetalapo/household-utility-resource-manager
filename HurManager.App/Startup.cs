@@ -1,6 +1,17 @@
+using System;
+
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+
+using HurManager.App.Common.Monads;
+using HurManager.Bll.DI;
+using HurManager.Dal.Context;
+using HurManager.Dal.DI;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -8,10 +19,28 @@ namespace HurManager.App
 {
     public class Startup
     {
+        public IContainer ApplicationContainer { get; private set; }
+
+        public IConfigurationRoot Configuration { get; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services
+                .AddOptions()
+                .AddHttpContextAccessor()
+                .AddDbContext<HurManagerContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("HurManager")))
+                .AddMvc();
+
+            this.ApplicationContainer = new ContainerBuilder()
+                .Do(builder =>
+                    builder
+                        .RegisterModule<DalModule>()
+                        .RegisterModule<BllModule>())
+                .Do(builder => builder.Populate(services))
+                .Build();
+
+            return new AutofacServiceProvider(this.ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -22,15 +51,13 @@ namespace HurManager.App
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
+            app.UseSpa(spa =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                spa.Options.SourcePath = "App";
             });
+
+            app.UseStaticFiles()
+               .UseDefaultFiles();
         }
     }
 }

@@ -1,0 +1,32 @@
+{
+  "awesomeTypescriptLoaderOptions": {
+    "useWebpackText": true,
+    "useTranspileModule": true,
+    "doTypeCheck": true,
+    "forkChecker": true
+  },
+    "compilerOptions": {
+        "forceConsistentCasingInFileNames": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "target": "es6",
+        "sourceMap": true,
+        "skipDefaultLibCheck": true,
+        "types": [ "webpack-env" ],
+        "lib": [ "es2015", "dom" ],
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "strictNullChecks": false,
+        "resolveJsonModule": true
+    },
+  "typeRoots": [
+    "../node_modules/@types",
+    "./"
+  ],
+  "exclude": [
+      "bin",
+      "node_modules"
+  ]
+}

@@ -1,11 +1,12 @@
 import axios from "axios";
+import { IHttpService } from "./IHttpService";
 
-export class HttpService {
+export class HttpService implements IHttpService {
     baseUrl: string = "";
     apiPrefix: string = "/api/"
     
     constructor(apiUrl? : string) {
-        this.baseUrl = apiUrl ? apiUrl : `${this.baseUrl}${this..apiPrefix}`;
+        this.baseUrl = apiUrl ? apiUrl : `${this.baseUrl}${this.apiPrefix}`;
     }
 
     async post(relativeUrl: string, data: any) {

@@ -1,9 +1,7 @@
-using System;
-
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 
-using HurManager.App.Common.Monads;
+using HurManager.App.DI;
 using HurManager.Bll.DI;
 using HurManager.Dal.Context;
 using HurManager.Dal.DI;
@@ -19,45 +17,86 @@ namespace HurManager.App
 {
     public class Startup
     {
-        public IContainer ApplicationContainer { get; private set; }
+        public IConfiguration Configuration { get; }
 
-        public IConfigurationRoot Configuration { get; }
+        public ILifetimeScope AutofacContainer { get; private set; }
+
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews();
+
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/wwwroot";
+            });
+
             services
+                .AddAutofac()
                 .AddOptions()
                 .AddHttpContextAccessor()
                 .AddDbContext<HurManagerContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("HurManager")))
                 .AddMvc();
-
-            this.ApplicationContainer = new ContainerBuilder()
-                .Do(builder =>
-                    builder
-                        .RegisterModule<DalModule>()
-                        .RegisterModule<BllModule>())
-                .Do(builder => builder.Populate(services))
-                .Build();
-
-            return new AutofacServiceProvider(this.ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "api",
+                    pattern: "api/{controller}/{action}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "api-fallback",
+                    pattern: "api/{*.}",
+                    new { controller = "Home", action = "ApiNotFound" });
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+            });
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "App";
-            });
+                spa.Options.SourcePath = "ClientApp";
 
-            app.UseStaticFiles()
-               .UseDefaultFiles();
+                if (env.IsDevelopment())
+                {
+                }
+            });
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder
+                .RegisterModule<AutomapperModule>()
+                .RegisterModule<DalModule>()
+                .RegisterModule<BllModule>();
         }
     }
 }

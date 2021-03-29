@@ -43,7 +43,12 @@ namespace HurManager.App
                 .AddAutofac()
                 .AddOptions()
                 .AddHttpContextAccessor()
-                .AddDbContext<HurManagerContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("HurManager")))
+                .AddDbContext<HurManagerContext>(
+                    options => 
+                    options
+                        .UseSqlServer(
+                            this.Configuration.GetConnectionString("HurManager"),
+                            p => p.EnableRetryOnFailure()))
                 .AddMvc();
         }
 

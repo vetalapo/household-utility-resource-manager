@@ -8,6 +8,7 @@ using HurManager.Dal.DI;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,10 @@ namespace HurManager.App
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+                //{
+                //    HotModuleReplacement = true
+                //});
             }
             else
             {
@@ -77,18 +82,19 @@ namespace HurManager.App
                     new { controller = "Home", action = "ApiNotFound" });
 
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                    name: "def-fallback",
+                    pattern: "{*.}",
+                    new { controller = "Home", action = "Index" });
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                }
-            });
+            //    if (env.IsDevelopment())
+            //    {
+            //    }
+            //});
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

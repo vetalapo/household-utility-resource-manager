@@ -19,7 +19,8 @@
         "noImplicitAny": false,
         "noImplicitReturns": true,
         "strictNullChecks": false,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "noEmit": true
     },
   "typeRoots": [
     "../node_modules/@types",

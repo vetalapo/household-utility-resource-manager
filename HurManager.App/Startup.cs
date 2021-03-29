@@ -8,7 +8,6 @@ using HurManager.Dal.DI;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,12 +30,10 @@ namespace HurManager.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/wwwroot";
+                configuration.RootPath = "client-app/dist";
             });
 
             services
@@ -60,18 +57,11 @@ namespace HurManager.App
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                //{
-                //    HotModuleReplacement = true
-                //});
             }
             else
             {
                 app.UseExceptionHandler("/Error");
             }
-
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
 
             app.UseRouting();
 
@@ -85,21 +75,19 @@ namespace HurManager.App
                     name: "api-fallback",
                     pattern: "api/{*.}",
                     new { controller = "Home", action = "ApiNotFound" });
-
-                endpoints.MapControllerRoute(
-                    name: "def-fallback",
-                    pattern: "{*.}",
-                    new { controller = "Home", action = "Index" });
             });
+            
+            app.UseSpaStaticFiles();
 
-            //app.UseSpa(spa =>
-            //{
-            //    spa.Options.SourcePath = "ClientApp";
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "client-app";
 
-            //    if (env.IsDevelopment())
-            //    {
-            //    }
-            //});
+                if (env.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/");
+                }
+            });
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

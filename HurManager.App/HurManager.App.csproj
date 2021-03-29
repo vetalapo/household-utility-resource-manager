@@ -24,9 +24,4 @@
     <ProjectReference Include="..\HurManager.Dal\HurManager.Dal.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ClientApp\" />
-    <Folder Include="Views\Shared\" />
-  </ItemGroup>
-
 </Project>

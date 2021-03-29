@@ -25,9 +25,78 @@ namespace HurManager.Bll.Services
 
         public async Task AddAsync(WaterMeterAdd dto)
         {
+            if (dto.Reading < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading));
+            }
+
+            if (dto.HouseId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.HouseId));
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.FactoryNumber))
+            {
+                throw new ArgumentNullException(nameof(dto.FactoryNumber));
+            }
+
+            dto.FactoryNumber = dto.FactoryNumber.Trim();
+
             var waterMeter = this._mapper.Map<WaterMeterEntity>(dto);
 
             await this._session.AddEntityAsync(waterMeter);
+        }
+
+        public async Task AddReadingByFactoryNumberAsync(WaterMeterReadingFactoryNbrAdd dto)
+        {
+            if (dto.Reading < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading));
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.FactoryNumber))
+            {
+                throw new ArgumentNullException(nameof(dto.FactoryNumber));
+            }
+
+            dto.FactoryNumber = dto.FactoryNumber.Trim();
+
+            var entity = await this._session.Query<WaterMeterEntity>().SingleOrDefaultAsync(x => x.FactoryNumber == dto.FactoryNumber) 
+                ?? throw new Exception("Entity not found");
+
+            if (entity.Reading > dto.Reading)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading), "Reading cannot be less than current DB value");
+            }
+
+            entity.Reading = dto.Reading;
+
+            await this._session.FlushAsync();
+        }
+
+        public async Task AddReadingByHouseIdAsync(WaterMeterReadingHouseIdAdd dto)
+        {
+            if (dto.Reading < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading));
+            }
+
+            if (dto.HouseId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.HouseId));
+            }
+
+            var entity = await this._session.Query<WaterMeterEntity>().SingleOrDefaultAsync(x => x.HouseId == dto.HouseId)
+                ?? throw new Exception("Entity not found"); ;
+
+            if (entity.Reading > dto.Reading)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading), "Reading cannot be less than current DB value");
+            }
+
+            entity.Reading = dto.Reading;
+
+            await this._session.FlushAsync();
         }
 
         public async Task<WaterMeterGet> GetAsync(int id)
@@ -39,7 +108,8 @@ namespace HurManager.Bll.Services
 
             var entity = await this._session.Query<WaterMeterEntity>()
                 .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.HouseId == id);
+                .Include(x => x.House)
+                .SingleOrDefaultAsync(x => x.WaterMeterId == id);
 
             var result = this._mapper.Map<WaterMeterGet>(entity);
 
@@ -54,14 +124,39 @@ namespace HurManager.Bll.Services
             }
 
             var entity = await this._session.Query<WaterMeterEntity>()
-                .SingleOrDefaultAsync(x => x.HouseId == id);
+                .SingleOrDefaultAsync(x => x.WaterMeterId == id);
 
             await this._session.RemoveEntityAsync(entity);
         }
 
         public async Task UpdateAsync(WaterMeterUpdate dto)
         {
-            var entity = await this._session.Query<WaterMeterEntity>().SingleOrDefaultAsync(x => x.HouseId == dto.Id);
+            if (dto.Reading < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading));
+            }
+
+            if (dto.Id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Id));
+            }
+
+            if (dto.HouseId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.HouseId));
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.FactoryNumber))
+            {
+                throw new ArgumentNullException(nameof(dto.FactoryNumber));
+            }
+
+            var entity = await this._session.Query<WaterMeterEntity>().SingleOrDefaultAsync(x => x.WaterMeterId == dto.Id);
+
+            if (entity.Reading > dto.Reading)
+            {
+                throw new ArgumentOutOfRangeException(nameof(dto.Reading), "Reading cannot be less than current DB value");
+            }
 
             this._mapper.Map(dto, entity);
 

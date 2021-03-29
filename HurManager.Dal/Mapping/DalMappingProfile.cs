@@ -61,9 +61,19 @@ namespace HurManager.Dal.Mapping
 
         private void WaterMeterMap()
         {
-            this.CreateMap<WaterMeterEntity, WaterMeterGet>();
-            this.CreateMap<WaterMeterEntity, WaterMeterAdd>();
-            this.CreateMap<WaterMeterEntity, WaterMeterUpdate>();
+            this.CreateMap<WaterMeterEntity, WaterMeterGet>()
+                .ForMember(
+                    x => x.Id,
+                    x => x.MapFrom(o => o.WaterMeterId)
+                );
+
+            this.CreateMap<WaterMeterAdd, WaterMeterEntity>();
+            
+            this.CreateMap<WaterMeterUpdate, WaterMeterEntity>()
+                .ForMember(
+                    x => x.WaterMeterId,
+                    x => x.MapFrom(o => o.Id)
+                );
         }
     }
 }

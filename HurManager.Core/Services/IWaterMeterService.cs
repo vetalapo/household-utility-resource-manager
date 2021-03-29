@@ -13,5 +13,9 @@ namespace HurManager.Core.Services
         Task<WaterMeterGet> GetAsync(int id);
 
         Task UpdateAsync(WaterMeterUpdate dto);
+
+        Task AddReadingByHouseIdAsync(WaterMeterReadingHouseIdAdd dto);
+
+        Task AddReadingByFactoryNumberAsync(WaterMeterReadingFactoryNbrAdd dto);
     }
 }

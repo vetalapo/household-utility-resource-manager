@@ -51,5 +51,21 @@ namespace HurManager.App.Controllers
 
             return this.Ok(result);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> AddReadingByHouseId([FromBody] WaterMeterReadingHouseIdAdd dto)
+        {
+            var result = await this._waterMeterService.AddReadingByHouseIdAsync(dto).AsOperationAsync();
+
+            return this.Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> AddReadingByFactoryNumber([FromBody] WaterMeterReadingFactoryNbrAdd dto)
+        {
+            var result = await this._waterMeterService.AddReadingByFactoryNumberAsync(dto).AsOperationAsync();
+
+            return this.Ok(result);
+        }
     }
 }

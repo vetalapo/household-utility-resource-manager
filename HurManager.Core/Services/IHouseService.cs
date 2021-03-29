@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using HurManager.Dto.Houses;
 
@@ -13,5 +14,11 @@ namespace HurManager.Core.Services
         Task<HouseGet> GetAsync(int id);
 
         Task UpdateAsync(HouseUpdate dto);
+
+        Task<IEnumerable<HouseGet>> ListAsync();
+
+        Task<HouseSummary> GetMaxMeterAsync();
+
+        Task<HouseSummary> GetMinMeterAsync();
     }
 }

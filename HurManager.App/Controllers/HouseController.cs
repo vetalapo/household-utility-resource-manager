@@ -51,5 +51,29 @@ namespace HurManager.App.Controllers
 
             return this.Ok(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            var result = await this._houseService.ListAsync().AsOperationAsync();
+
+            return this.Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMaxMeter()
+        {
+            var result = await this._houseService.GetMaxMeterAsync().AsOperationAsync();
+
+            return this.Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMinMeter()
+        {
+            var result = await this._houseService.GetMinMeterAsync().AsOperationAsync();
+
+            return this.Ok(result);
+        }
     }
 }

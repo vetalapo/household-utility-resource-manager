@@ -22,9 +22,41 @@ namespace HurManager.Dal.Mapping
 
         private void HouseMap()
         {
-            this.CreateMap<HouseEntity, HouseGet>();
-            this.CreateMap<HouseEntity, HouseAdd>();
-            this.CreateMap<HouseEntity, HouseUpdate>();
+            this.CreateMap<HouseEntity, HouseGet>()
+                .ForMember(
+                    x => x.Id,
+                    x => x.MapFrom(o => o.HouseId)
+                )
+                .ForMember(
+                    x => x.WaterMeterId,
+                    x => x.MapFrom(o => o.WaterMeter.WaterMeterId)
+                );
+
+            this.CreateMap<HouseAdd, HouseEntity>();
+            
+            this.CreateMap<HouseUpdate, HouseEntity>()
+                .ForMember(
+                    x => x.HouseId,
+                    x => x.MapFrom(o => o.Id)
+                );
+
+            this.CreateMap<HouseEntity, HouseSummary>()
+                .ForMember(
+                    x => x.Id,
+                    x => x.MapFrom(o => o.HouseId)
+                )
+                .ForMember(
+                    x => x.WaterMeterId,
+                    x => x.MapFrom(o => o.WaterMeter.WaterMeterId)
+                )
+                .ForMember(
+                    x => x.WaterMeterReading,
+                    x => x.MapFrom(o => o.WaterMeter.Reading)
+                )
+                .ForMember(
+                    x => x.WaterMeterFactoryNumber,
+                    x => x.MapFrom(o => o.WaterMeter.FactoryNumber)
+                );
         }
 
         private void WaterMeterMap()

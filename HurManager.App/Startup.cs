@@ -30,7 +30,7 @@ namespace HurManager.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // In production, the React files will be served from this directory
+            // In production, the SPA files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "client-app/dist";

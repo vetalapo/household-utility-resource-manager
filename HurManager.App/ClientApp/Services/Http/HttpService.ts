@@ -1,12 +1,11 @@
 import axios from "axios";
 
-export class HttpService implements IHttpService {
-    private _tokenService: ITokenService;
-    private _serverSettings = new AppSettings().Server();
-    baseUrl: string;
+export class HttpService {
+    baseUrl: string = "";
+    apiPrefix: string = "/api/"
     
     constructor(apiUrl? : string) {
-        this.baseUrl = apiUrl ? apiUrl : `${this._serverSettings.baseUrl}${this._serverSettings.apiPrefix}`;
+        this.baseUrl = apiUrl ? apiUrl : `${this.baseUrl}${this..apiPrefix}`;
     }
 
     async post(relativeUrl: string, data: any) {

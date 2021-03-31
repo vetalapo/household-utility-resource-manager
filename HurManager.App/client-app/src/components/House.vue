@@ -9,7 +9,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Houses</v-toolbar-title>
+        <v-toolbar-title>Houses List</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -28,7 +28,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              New Item
+              New House
             </v-btn>
           </template>
           <v-card>
@@ -130,6 +130,16 @@ export default class House extends Vue {
       value: "address"
     },
     {
+      text: "Water Meter",
+      sortable: false,
+      value: "waterMeterFactoryNumber"
+    },
+    {
+      text: "Reading",
+      sortable: false,
+      value: "waterMeterReading"
+    },
+    {
       text: "Actions",
       value: "actions",
       sortable: false
@@ -149,7 +159,7 @@ export default class House extends Vue {
   }
 
   get formTitle() {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.editedIndex === -1 ? 'New House' : 'Edit House'
   }
 
   editItem(item: any) {

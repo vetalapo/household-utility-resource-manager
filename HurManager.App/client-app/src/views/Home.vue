@@ -3,7 +3,7 @@
       <v-app>
           <v-main>
               <v-container fluid>
-                <House msg="Welcome to Your Vue.js + TypeScript App"/>
+                <House />
               </v-container>
           </v-main>
       </v-app>

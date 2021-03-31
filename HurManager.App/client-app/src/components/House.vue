@@ -92,9 +92,7 @@
     import { ReadingAdd } from "../models/ReadingAdd"
     
     @Component
-    export default class House extends Vue {
-        @Prop() private msg!: string;
-        
+    export default class House extends Vue {      
         houses: HouseSummary[] = [];
         editedItem: HouseSummary = {} as HouseSummary;
         defaultItem: HouseSummary = {} as HouseSummary;
@@ -141,28 +139,27 @@
         }
         
         async initialize() {
-            this.houses = (await axios.get("http://localhost:51830/api/house/list")).data.result;
+            await  this.loadHousesData()
+        }
+
+        async loadHousesData() {
+            this.houses = (await axios.get("/api/house/list")).data.result;
         }
         
         get formTitle() {
             return this.editedIndex === -1 ? 'New House' : 'Edit House'
         }
         
-        editItem(item: any) {
+        async editItem(item: HouseSummary) {
             this.editedIndex = this.houses.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         }
         
-        deleteItem(item: any) {
+        deleteItem(item: HouseSummary) {
             this.editedIndex = this.houses.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
-        }
-        
-        deleteItemConfirm() {
-            this.houses.splice(this.editedIndex, 1)
-            this.closeDelete()
         }
         
         close() {
@@ -174,17 +171,44 @@
         }
         
         closeDelete() {
-            this.dialogDelete = false
+            this.dialogDelete = false;
+
             this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
             })
         }
+
+        async deleteItemConfirm() {
+            let operationStatus = (await axios.delete("/api/house/delete/" + this.editedItem.id)).data.status;
+
+            if (operationStatus !== 0) {
+                // Notification
+                return;
+            }
+
+            this.houses.splice(this.editedIndex, 1)
+            this.closeDelete()
+        }
         
-        save() {
+        async save() {
             if (this.editedIndex > -1) {
+                let operationStatus = (await axios.put("/api/house/update", this.editedItem)).data.status;
+
+                if (operationStatus !== 0) {
+                    // Notification
+                    return;
+                }
+
                 Object.assign(this.houses[this.editedIndex], this.editedItem)
             } else {
+                let operationStatus = (await axios.post("/api/house/add", this.editedItem)).data.status;
+
+                if (operationStatus !== 0) {
+                    // Notification
+                    return;
+                }
+
                 this.houses.push(this.editedItem)
             }
             

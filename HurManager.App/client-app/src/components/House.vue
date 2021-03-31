@@ -6,69 +6,59 @@
     class="elevation-1"
   >
     <template v-slot:top>
-      <v-toolbar
-        flat
-      >
+      <v-toolbar flat>
         <v-toolbar-title>Houses List</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
+        <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog
-          v-model="dialog"
-          max-width="500px"
-        >
+        <v-dialog v-model="dialogAddReading" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              dark
-              class="mb-2"
-              v-bind="attrs"
-              v-on="on"
-            >
-              New House
-            </v-btn>
+            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">Add Reading</v-btn>
           </template>
           <v-card>
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
             </v-card-title>
-
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="4"
-                  >
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="House address"
-                    ></v-text-field>
+                  <v-col cols="12" sm="10" md="12">
+                    <v-text-field v-model="readingItem.identifier" label="Meter Factory Number or House ID" :rules="[rules.required, rules.min]"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="10" md="12">
+                    <v-text-field v-model="editedItem.reading" label="House reading" type="number" min="0" :rules="[rules.required]"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
-
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                color="blue darken-1"
-                text
-                @click="close"
-              >
-                Cancel
-              </v-btn>
-              <v-btn
-                color="blue darken-1"
-                text
-                @click="save"
-              >
-                Save
-              </v-btn>
+              <v-btn color="blue darken-1" text @click="addReadingClose">Cancel</v-btn>
+              <v-btn color="blue darken-1" text @click="addReadingSave">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-divider class="mx-4" inset vertical></v-divider>
+        <v-dialog v-model="dialog" max-width="500px">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New House</v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="10" md="12">
+                    <v-text-field v-model="editedItem.address" label="House address" :rules="[rules.required, rules.min]"></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+              <v-btn color="blue darken-1" text @click="save">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -86,126 +76,133 @@
       </v-toolbar>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        small
-        class="mr-2"
-        @click="editItem(item)"
-      >
-        mdi-pencil
-      </v-icon>
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
-        mdi-delete
-      </v-icon>
+      <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+      <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
     </template>
     <template v-slot:no-data>
-      <v-btn
-        color="primary"
-        @click="initialize"
-      >
-        Reset
-      </v-btn>
+      <v-btn color="primary" @click="initialize">Reset</v-btn>
     </template>
   </v-data-table>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Inject, Watch } from 'vue-property-decorator';
-import axios from "axios";
+    import { Component, Prop, Vue, Inject, Watch } from 'vue-property-decorator';
+    import axios from "axios";
+    import { HouseSummary } from "../models/HouseSummary";
+    import { ReadingAdd } from "../models/ReadingAdd"
+    
+    @Component
+    export default class House extends Vue {
+        @Prop() private msg!: string;
+        
+        houses: HouseSummary[] = [];
+        editedItem: HouseSummary = {} as HouseSummary;
+        defaultItem: HouseSummary = {} as HouseSummary;
+        readingItem: ReadingAdd = {} as ReadingAdd;
+        readingDefaultItem: ReadingAdd = {} as ReadingAdd;
+        
+        headers = [
+          {
+            text: "Address",
+            sortable: true,
+            value: "address"
+          },
+          {
+            text: "Water Meter",
+            sortable: false,
+            value: "waterMeterFactoryNumber"
+          },
+          {
+            text: "Reading",
+            sortable: false,
+            value: "waterMeterReading"
+          },
+          {
+            text: "Actions",
+            value: "actions",
+            sortable: false
+          }
+        ];
+        
+        dialog = false;
+        dialogDelete = false;
+        dialogAddReading = false;
+        
+        editedIndex = -1;
+        addReadingEditedIndex = -1;
+        
+        rules = {
+            required: value => !!value || "Required.",
+            min: v => v?.length >= 3 || "Min 3 characters"
+        }
+        
+        async created() {
+            await this.initialize();
+        }
+        
+        async initialize() {
+            this.houses = (await axios.get("http://localhost:51830/api/house/list")).data.result;
+        }
+        
+        get formTitle() {
+            return this.editedIndex === -1 ? 'New House' : 'Edit House'
+        }
+        
+        editItem(item: any) {
+            this.editedIndex = this.houses.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.dialog = true
+        }
+        
+        deleteItem(item: any) {
+            this.editedIndex = this.houses.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.dialogDelete = true
+        }
+        
+        deleteItemConfirm() {
+            this.houses.splice(this.editedIndex, 1)
+            this.closeDelete()
+        }
+        
+        close() {
+            this.dialog = false
+            this.$nextTick(() => {
+              this.editedItem = Object.assign({}, this.defaultItem)
+              this.editedIndex = -1
+            })
+        }
+        
+        closeDelete() {
+            this.dialogDelete = false
+            this.$nextTick(() => {
+                this.editedItem = Object.assign({}, this.defaultItem)
+                this.editedIndex = -1
+            })
+        }
+        
+        save() {
+            if (this.editedIndex > -1) {
+                Object.assign(this.houses[this.editedIndex], this.editedItem)
+            } else {
+                this.houses.push(this.editedItem)
+            }
+            
+            this.close()
+        }
 
-@Component
-export default class House extends Vue {
-  @Prop() private msg!: string;
+        addReadingClose() {
+            this.dialogAddReading = false;
 
-  houses = [];
-  editedItem = {};
-  defaultItem = {};
+            this.$nextTick(() => {
+              this.addReadingEditedIndex = -1
+            })
+        }
 
-  headers = [
-    {
-      text: "Address",
-      sortable: true,
-      value: "address"
-    },
-    {
-      text: "Water Meter",
-      sortable: false,
-      value: "waterMeterFactoryNumber"
-    },
-    {
-      text: "Reading",
-      sortable: false,
-      value: "waterMeterReading"
-    },
-    {
-      text: "Actions",
-      value: "actions",
-      sortable: false
+        addReadingSave() {
+            this.addReadingClose()
+        }
     }
-  ];
-
-  dialog = false;
-  dialogDelete = false;
-  editedIndex = -1;
-
-  async created() {
-       await this.initialize();
-  }
-
-  async initialize() {
-    this.houses = (await axios.get("http://localhost:51830/api/house/list")).data.result;
-  }
-
-  get formTitle() {
-      return this.editedIndex === -1 ? 'New House' : 'Edit House'
-  }
-
-  editItem(item: any) {
-      this.editedIndex = this.houses.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-  }
-
-  deleteItem(item: any) {
-      this.editedIndex = this.houses.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
-  }
-
-  deleteItemConfirm() {
-      this.houses.splice(this.editedIndex, 1)
-      this.closeDelete()
-  }
-
-  close() {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-  }
-
-  closeDelete() {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-      })
-  }
-
-  save() {
-      if (this.editedIndex > -1) {
-          Object.assign(this.houses[this.editedIndex], this.editedItem)
-      } else {
-          this.houses.push(this.editedItem)
-      }
-      
-      this.close()
-  }
-  
-}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

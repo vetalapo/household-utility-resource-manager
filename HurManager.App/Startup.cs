@@ -5,6 +5,7 @@ using HurManager.App.DI;
 using HurManager.Bll.DI;
 using HurManager.Dal.Context;
 using HurManager.Dal.DI;
+using HurManager.Dto.Settings;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -85,7 +86,9 @@ namespace HurManager.App
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/");
+                    var spaUrl = this.Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>()?.DevSpaUrl ?? string.Empty;
+
+                    spa.UseProxyToSpaDevelopmentServer(spaUrl);
                 }
             });
         }

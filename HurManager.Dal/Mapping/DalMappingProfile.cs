@@ -55,7 +55,7 @@ namespace HurManager.Dal.Mapping
                 )
                 .ForMember(
                     x => x.WaterMeterFactoryNumber,
-                    x => x.MapFrom(o => o.WaterMeter.FactoryNumber)
+                    x => x.MapFrom(o => o.WaterMeter.FactoryNumber ?? string.Empty)
                 );
         }
 

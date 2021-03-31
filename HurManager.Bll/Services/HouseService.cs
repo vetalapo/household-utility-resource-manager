@@ -83,14 +83,14 @@ namespace HurManager.Bll.Services
             return result;
         }
 
-        public async Task<IEnumerable<HouseGet>> ListAsync()
+        public async Task<IEnumerable<HouseSummary>> ListAsync()
         {
             var entityList = await this._session.Query<HouseEntity>()
                 .AsNoTracking()
                 .Include(x => x.WaterMeter)
                 .ToArrayAsync();
 
-            var result = entityList.Select(x => this._mapper.Map<HouseGet>(x));
+            var result = entityList.Select(x => this._mapper.Map<HouseSummary>(x));
 
             return result;
         }

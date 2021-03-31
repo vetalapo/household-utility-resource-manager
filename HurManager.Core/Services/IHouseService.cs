@@ -15,7 +15,7 @@ namespace HurManager.Core.Services
 
         Task UpdateAsync(HouseUpdate dto);
 
-        Task<IEnumerable<HouseGet>> ListAsync();
+        Task<IEnumerable<HouseSummary>> ListAsync();
 
         Task<HouseSummary> GetMaxMeterAsync();
 

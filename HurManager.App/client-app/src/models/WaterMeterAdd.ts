@@ -1,9 +1,9 @@
-export class WaterMeterReadingFactoryNbrAdd {
+export class WaterMeterAdd {
     houseId = 0;
     factoryNumber = "";
     reading = 0;
 
-    constructor(init?: Partial<WaterMeterReadingFactoryNbrAdd>) {
+    constructor(init?: Partial<WaterMeterAdd>) {
         if (init) {
             Object.assign(this, init);
         }

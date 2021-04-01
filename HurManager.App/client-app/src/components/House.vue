@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-    import { Component, Prop, Vue, Inject, Watch } from 'vue-property-decorator';
+    import { Component, Vue } from 'vue-property-decorator';
     import axios from "axios";
     import { HouseSummary } from "../models/HouseSummary";
     import { ReadingAdd } from "../models/ReadingAdd";
@@ -136,8 +136,8 @@
         addReadingEditedIndex = -1;
         
         rules = {
-            required: value => !!value || "Required.",
-            min: v => v?.length >= 3 || "Min 3 characters"
+            required: (value: any) => !!value || "Required.",
+            min: (v: string|any[]) => v?.length >= 3 || "Min 3 characters"
         }
         
         async created() {
@@ -264,6 +264,4 @@
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
+<style scoped></style>

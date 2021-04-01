@@ -1,4 +1,5 @@
 <template>
+  <v-container>
   <v-data-table
     :headers="headers"
     :items="houses"
@@ -83,6 +84,25 @@
       <v-btn color="primary" @click="initialize">Reset</v-btn>
     </template>
   </v-data-table>
+  <v-card
+    elevation="8"
+    outlined
+    shaped
+    class="card"
+  >
+    <v-card-title>Max / Min consumption by house</v-card-title>
+    <v-card-text>
+      <div>
+        <b>Top consumption house:</b> {{ maxMeterReadingHouse.address }}, <b>Reading:</b> {{ maxMeterReadingHouse.waterMeterReading }}
+        <v-btn icon color="green" @click="loadMaxMeterReadingHouse"><v-icon>mdi-cached</v-icon></v-btn>
+      </div>
+      <div>
+        <b>Min consumption house:</b> {{ minMeterReadingHouse.address }}, <b>Reading:</b> {{ minMeterReadingHouse.waterMeterReading }}
+        <v-btn icon color="green" @click="loadMinMeterReadingHouse"><v-icon>mdi-cached</v-icon></v-btn>
+      </div>
+    </v-card-text>
+  </v-card>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -97,8 +117,18 @@
         houses: HouseSummary[] = [];
         editedItem: HouseSummary = {} as HouseSummary;
         defaultItem: HouseSummary = {} as HouseSummary;
+        maxMeterReadingHouse: HouseSummary = {} as HouseSummary;
+        minMeterReadingHouse: HouseSummary = {} as HouseSummary;
+
         readingItem: ReadingAdd = {} as ReadingAdd;
         readingDefaultItem: ReadingAdd = {} as ReadingAdd;
+
+        dialog = false;
+        dialogDelete = false;
+        dialogAddReading = false;
+        
+        editedIndex = -1;
+        addReadingEditedIndex = -1;
         
         headers = [
             {
@@ -128,13 +158,6 @@
             }
         ];
         
-        dialog = false;
-        dialogDelete = false;
-        dialogAddReading = false;
-        
-        editedIndex = -1;
-        addReadingEditedIndex = -1;
-        
         rules = {
             required: (value: any) => !!value || "Required.",
             min: (v: string|any[]) => v?.length >= 3 || "Min 3 characters"
@@ -145,11 +168,21 @@
         }
         
         async initialize() {
-            await  this.loadHousesData()
+            await this.loadHousesData();
+            await this.loadMaxMeterReadingHouse();
+            await this.loadMinMeterReadingHouse();
         }
 
         async loadHousesData() {
             this.houses = (await axios.get("/api/house/list")).data.result;
+        }
+
+        async loadMaxMeterReadingHouse() {
+            this.maxMeterReadingHouse = (await axios.get("/api/house/getMaxMeter")).data.result;
+        }
+
+        async loadMinMeterReadingHouse() {
+            this.minMeterReadingHouse = (await axios.get("/api/house/getMinMeter")).data.result;
         }
         
         get formTitle() {
@@ -264,4 +297,8 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped>
+    .card {
+        margin-top: 50px;
+    }
+</style>

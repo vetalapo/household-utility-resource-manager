@@ -47,7 +47,8 @@ namespace HurManager.App
                         .UseSqlServer(
                             this.Configuration.GetConnectionString("HurManager"),
                             p => p.EnableRetryOnFailure()))
-                .AddMvc();
+                .AddMvc()
+                .AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

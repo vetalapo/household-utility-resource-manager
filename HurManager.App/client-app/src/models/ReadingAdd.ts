@@ -1,6 +1,6 @@
 export class ReadingAdd {
-    identifier: string = "";
-    reading: number = 0;
+    identifier = "";
+    reading = 0;
 
     constructor(init?: Partial<ReadingAdd>) {
         if (init) {

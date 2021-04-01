@@ -16,16 +16,16 @@
           </template>
           <v-card>
             <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
+              <span class="headline">Add Reading</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="10" md="12">
-                    <v-text-field v-model="readingItem.identifier" label="Meter Factory Number or House ID" :rules="[rules.required, rules.min]"></v-text-field>
+                    <v-text-field v-model="readingItem.identifier" label="Meter Factory Number or House ID" :rules="[rules.required]"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="10" md="12">
-                    <v-text-field v-model="editedItem.reading" label="House reading" type="number" min="0" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model="readingItem.reading" label="House reading" type="number" min="0" :rules="[rules.required]"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -89,7 +89,8 @@
     import { Component, Prop, Vue, Inject, Watch } from 'vue-property-decorator';
     import axios from "axios";
     import { HouseSummary } from "../models/HouseSummary";
-    import { ReadingAdd } from "../models/ReadingAdd"
+    import { ReadingAdd } from "../models/ReadingAdd";
+    import { WaterMeterReadingFactoryNbrAdd } from "../models/WaterMeterReadingFactoryNbrAdd";
     
     @Component
     export default class House extends Vue {      
@@ -100,26 +101,31 @@
         readingDefaultItem: ReadingAdd = {} as ReadingAdd;
         
         headers = [
-          {
-            text: "Address",
-            sortable: true,
-            value: "address"
-          },
-          {
-            text: "Water Meter",
-            sortable: false,
-            value: "waterMeterFactoryNumber"
-          },
-          {
-            text: "Reading",
-            sortable: false,
-            value: "waterMeterReading"
-          },
-          {
-            text: "Actions",
-            value: "actions",
-            sortable: false
-          }
+            {
+                text: "Id",
+                sortable: false,
+                value: "id"
+            },
+            {
+                text: "Address",
+                sortable: true,
+                value: "address"
+            },
+            {
+                text: "Water Meter",
+                sortable: false,
+                value: "waterMeterFactoryNumber"
+            },
+            {
+                text: "Reading",
+                sortable: false,
+                value: "waterMeterReading"
+            },
+            {
+                text: "Actions",
+                value: "actions",
+                sortable: false
+            }
         ];
         
         dialog = false;
@@ -217,14 +223,43 @@
 
         addReadingClose() {
             this.dialogAddReading = false;
+            this.readingItem = new ReadingAdd();
 
             this.$nextTick(() => {
               this.addReadingEditedIndex = -1
             })
         }
 
-        addReadingSave() {
-            this.addReadingClose()
+        async addReadingSave() {
+            let operationStatus = 1;
+            let url = "/api/watermeter/";
+            
+            let input = new WaterMeterReadingFactoryNbrAdd();
+
+            let isNum = /^\d+$/.test(this.readingItem.identifier);
+
+            if (isNum) {
+                url = url + "addreadingbyhouseid";
+
+                input.houseId = parseInt(this.readingItem.identifier);
+                input.reading = this.readingItem.reading;
+            } else {
+                url = url + "addReadingByFactoryNumber";
+
+                input.factoryNumber = this.readingItem.identifier;
+                input.reading = this.readingItem.reading;
+            }
+            
+            operationStatus = (await axios.put(url, input)).data.status;
+
+            if (operationStatus !== 0) {
+                // Notification
+                return;
+            }
+
+            await this.loadHousesData();
+
+            this.addReadingClose();
         }
     }
 </script>

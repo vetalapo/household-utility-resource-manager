@@ -8,7 +8,7 @@ Please consult client-app README for proper Project setup
 ## Frontend
 1. Navigate to
       `../HurManager.App/client-app`
-2. Install npp packages
+2. Install npm packages
 ```
     npm install
 ```
